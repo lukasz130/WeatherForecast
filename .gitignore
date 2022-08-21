@@ -1,3 +1,6 @@
+# Configuration file for application - not part of application
+config.txt
+
 # IDE configuration directory
 .idea
 
