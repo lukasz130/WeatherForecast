@@ -1,8 +1,8 @@
 import requests
+from os.path import exists
 
 
 class Model:
-    # TODO: Add to create config.file if doesn't exist and fill with some default parameters
     # TODO: Add error handling for weather API e.g. 404 NOT FOUND
     # TODO: Add error handling if parameter cannon be updated or add
     # TODO: Add method to update/add multiple parameters
@@ -12,6 +12,18 @@ class Model:
     _API_KEY = '914afb0af72a3e16c31fe7ac6fffe93d'
 
     def __init__(self):
+        if not exists('config.txt'):
+            with open('config.txt', 'w') as file:
+                file_content = [
+                    "city=Kraków\n",
+                    "temperature=18.96\n",
+                    "conditions=Clouds\n",
+                    "description=few clouds\n",
+                    "icon=02n\n",
+                    "units_format=metric\n"]
+                for line in file_content:
+                    file.write(line)
+
         self._city = city_conf if (city_conf := self.get_from_config_file('city')) else 'N/A'
         self._temperature = temperature if (temperature := self.get_from_config_file('temperature')) else 'N/A'
         self._conditions = conditions if (conditions := self.get_from_config_file('conditions')) else 'N/A'
@@ -136,16 +148,3 @@ class Model:
             if not is_parameter_in_file:
                 # file.close()
                 return None
-
-
-# Example of config file:
-# city=Tokio
-# temperature=24.72
-# conditions=Clouds
-# description=broken clouds
-# icon=04d
-# units_format=metric
-# last_weather_check=?
-# width=100
-# height=300
-# spacing=10
