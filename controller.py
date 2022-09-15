@@ -19,6 +19,7 @@ class Controller:
 
         self.view.set_conditions(self.model.conditions)
         self.view.set_description(self.model.description)
+        self.view.set_up_to_date_message(self.model.is_time_up_to_date())
 
         self.view.show_all()
         self.view.run()
@@ -26,15 +27,17 @@ class Controller:
     def on_search(self, requested_city):
         self.model.city = requested_city if not requested_city == ''\
                           else self.model.get_from_config_file('city')
-        self.model.check_weather()
-
-        self.view.set_city(self.model.city)
-        # unit_format = 'C' if self.model.get_from_config_file('units_format') == 'metric' else 'F'
-        units_format = self.model.get_from_config_file('units_format')
-        self.view.set_temperature(self.model.temperature, units_format)
-        self.view.set_conditions(self.model.conditions)
-        self.view.set_description(self.model.description)
-        self.view.set_weather_icon(self.model.icon)
+        status = self.model.check_weather()
+        if status == 'OK':
+            self.view.set_city(self.model.city)
+            units_format = self.model.get_from_config_file('units_format')
+            self.view.set_temperature(self.model.temperature, units_format)
+            self.view.set_conditions(self.model.conditions)
+            self.view.set_description(self.model.description)
+            self.view.set_weather_icon(self.model.icon)
+            self.view.set_up_to_date_message(self.model.is_time_up_to_date())
+        else:
+            self.view.show_dialog(status)
 
     def on_units_format_changed(self, units_format):
         self.model.units_format = units_format

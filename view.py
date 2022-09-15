@@ -5,11 +5,9 @@ from gi.repository import Gtk, GdkPixbuf
 
 
 class View(Gtk.Window):
-    # TODO: Add to memorize and show on start last chosen city with weather conditions
-    # TODO: Add weather check time
-    # TODO: Add units choose: metric or imperial
     # TODO: Add to generate dialogs when wrong name and also when city not chosen
     # TODO: Make GUI prettier - low priority
+    # TODO: Change metric to *C and imperial to *F
     def __init__(self):
         super().__init__(title='Weather Forecast')
 
@@ -44,6 +42,9 @@ class View(Gtk.Window):
         self._description_label = Gtk.Label()
         self._box.add(self._description_label)
 
+        self._up_to_date_label = Gtk.Label()
+        self._box.add(self._up_to_date_label)
+
         self.connect('destroy', Gtk.main_quit)
 
     @staticmethod
@@ -70,7 +71,7 @@ class View(Gtk.Window):
 
     def on_search(self, callback):
         self._search_button.connect('clicked', lambda widget: callback(self._enter_city.get_text()
-                                   if self._enter_city.get_text() != 'Enter city' else ''))
+                                    if self._enter_city.get_text() != 'Enter city' else ''))
 
     def set_units_format(self, unit_format):
         self._units_format_combo.set_active_id(unit_format)
@@ -78,7 +79,35 @@ class View(Gtk.Window):
     def on_units_format_changed(self, callback):
         self._units_format_combo.connect('changed', lambda widget: callback(self._units_format_combo.get_active_id()))
 
-    # TODO: Maybe change name to weather_icon_mapping
+    def set_up_to_date_message(self, is_weather_up_to_date=False):
+        color = 'green' if is_weather_up_to_date else 'red'
+        up_to_date_message = 'Less then 2 hours ago' if is_weather_up_to_date else 'More than 2 hours ago'
+        self._up_to_date_label.set_markup(f'<span color="{color}">Last update:\n{up_to_date_message}</span>')
+
+    def show_dialog(self, status):
+        if status == 'Unauthorized':
+            dialog_title = 'Authorization problem'
+            dialog_text = 'Wrong API key'
+        elif status == 'ConnectionError':
+            dialog_title = 'Connection problem'
+            dialog_text = 'Check internet connection'
+        elif status == 'NotFound':
+            dialog_title = 'City not found'
+            dialog_text = 'Try another city'
+        else:
+            dialog_title = 'Unknown problem'
+            dialog_text = 'Problem not known'
+        dialog = Gtk.MessageDialog(
+                                    transient_for=self,
+                                    flags=0,
+                                    message_type=Gtk.MessageType.ERROR,
+                                    buttons=Gtk.ButtonsType.OK,
+                                    text=dialog_title
+                                    )
+        dialog.format_secondary_text(dialog_text)
+        dialog.run()
+        dialog.destroy()
+
     @staticmethod
     def _get__weather_image_icon(icon_from_api):
         icons_mapping = {
