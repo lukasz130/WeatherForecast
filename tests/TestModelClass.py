@@ -1,6 +1,6 @@
 import unittest
 from os import path, system
-import controller
+from sources import controller
 
 
 class TestModelClass(unittest.TestCase):
