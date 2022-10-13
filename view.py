@@ -5,7 +5,6 @@ from gi.repository import Gtk, GdkPixbuf
 
 
 class View(Gtk.Window):
-    # TODO: Add to generate dialogs when wrong name and also when city not chosen
     # TODO: Make GUI prettier - low priority
     # TODO: Change metric to *C and imperial to *F
     def __init__(self):

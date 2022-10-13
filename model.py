@@ -4,9 +4,6 @@ import datetime
 
 
 class Model:
-    # TODO: Add error handling for weather API e.g. 404 NOT FOUND
-    # TODO: Add error handling if parameter cannot be updated or add
-    # TODO: Add wrong api_key error handling
 
     _API_KEY = '914afb0af72a3e16c31fe7ac6fffe93d'
 
@@ -116,6 +113,11 @@ class Model:
                     latitude = response_geocoding.json()[0]['lat']
                     longitude = response_geocoding.json()[0]['lon']
                 except IndexError:
+                    self.city = 'N/A'
+                    self.temperature = 'N/A'
+                    self.conditions = 'N/A'
+                    self.description = 'N/A'
+                    self.icon = 'N/A'
                     return 'NotFound'
                 response_weather_json = requests.get(
                     f'https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}'
